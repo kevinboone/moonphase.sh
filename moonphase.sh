@@ -38,7 +38,7 @@ REF_EPOCH=`date --date "$REF_DATE" +%s`
 # Convert the calculation date to a Unix epoch time in seconds.
 # We'll also store a displayable form of the date, just for 
 #   display purposes 
-if [[ -z "$1" ]] then
+if [[ -z "$1" ]] ; then
   NOW_EPOCH=`date +%s`
   NOW_DISPLAY=`date "+%b %d %Y"`
 else
@@ -48,20 +48,20 @@ fi
 
 # Calculate the number of seconds between the current time and the reference
 #   time.
-SEC_DIFF=`expr $NOW_EPOCH - $REF_EPOCH`
+SEC_DIFF=$(($NOW_EPOCH - $REF_EPOCH))
 
 # What's a centi-moon? It's 100 times the fraction of the synodic month
 #   represented by the time difference beween current and reference times.
 # That is, if the time difference is exactly one synodic month, that's
 #   100 'centi-moons'. I'm using this way of representing the moon phase
 #   because (a) we're representing the moon phase as a percentage anyway
-#   and (b) because 'expr' can't do floating-point math. 
-CENTI_MOONS=`expr 100 "*" $SEC_DIFF / $SYNODIC_SECONDS`
+#   and (b) because bash can't do floating-point math. 
+CENTI_MOONS=$((100 * $SEC_DIFF / $SYNODIC_SECONDS))
 
 # To get the current phase, add the time offset in 'centi-moons' to the
 #   reference phase (which is a percentage). Because this addition might
 #   exceed 100%, we'll reduce it modulo 100 to keep it in the 0-99 range.
-MOON_PERCENT=`expr \( $CENTI_MOONS + $REF_PERCENT \) % 100`
+MOON_PERCENT=$((($CENTI_MOONS + $REF_PERCENT) % 100))
 
 # ==== Display =====
 
@@ -72,21 +72,21 @@ MOON_PERCENT=`expr \( $CENTI_MOONS + $REF_PERCENT \) % 100`
 #   whole-number percentages is not significant here. 
 echo -n "$NOW_DISPLAY: "
 echo -n "$MOON_PERCENT%, "
-if [[ $MOON_PERCENT -lt 7 ]] then
+if [[ $MOON_PERCENT -lt 7 ]] ; then
   echo "new"
-elif [[ $MOON_PERCENT -lt 19 ]] then
+elif [[ $MOON_PERCENT -lt 19 ]] ; then
   echo "waxing crescent"
-elif [[ $MOON_PERCENT -lt 32 ]] then
+elif [[ $MOON_PERCENT -lt 32 ]] ; then
   echo "first quarter"
-elif [[ $MOON_PERCENT -lt 44 ]] then
+elif [[ $MOON_PERCENT -lt 44 ]] ; then
   echo "waxing gibbous"
-elif [[ $MOON_PERCENT -lt 57 ]] then
+elif [[ $MOON_PERCENT -lt 57 ]] ; then
   echo "full"
-elif [[ $MOON_PERCENT -lt 69  ]] then
+elif [[ $MOON_PERCENT -lt 69  ]] ; then
   echo "waning gibbous"
-elif [[ $MOON_PERCENT -lt 82 ]] then
+elif [[ $MOON_PERCENT -lt 82 ]] ; then
   echo "third quarter"
-elif [[ $MOON_PERCENT -lt 94 ]] then
+elif [[ $MOON_PERCENT -lt 94 ]] ; then
   echo "waning crescent"
 else
   echo "new"

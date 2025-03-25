@@ -35,6 +35,25 @@ SYNODIC_SECONDS=2551443
 # Convert the reference date to a Unix epoch time in seconds. 
 REF_EPOCH=`date --date "$REF_DATE" +%s`
 
+usage () {
+  cat <<USAGE
+$0 [-h|-s] [<date>]
+  -h            show usage
+  -s            display with symbols
+  no option     display with text
+  <date>        use given date instead of today, like "Jan 15 2023"
+USAGE
+}
+
+while getopts "hs" arg; do
+  case $arg in
+    h) usage; exit 0 ;;
+    s) display_symbols=1 ;;
+    *) ;;
+  esac
+done
+shift $((OPTIND-1))
+
 # Convert the calculation date to a Unix epoch time in seconds.
 # We'll also store a displayable form of the date, just for 
 #   display purposes 
@@ -65,31 +84,55 @@ MOON_PERCENT=$((($CENTI_MOONS + $REF_PERCENT) % 100))
 
 # ==== Display =====
 
-# Display the calulated moon phase. There are eight named phases, so
-#   each occupies 12.5% of the total synodic month. Full moon, for example,
-#   is exactly 50%; but we'll take values 44%-57% as full. Strictly it
-#   should be 43.75 to 56.25, but the error created in working with
-#   whole-number percentages is not significant here. 
-echo -n "$NOW_DISPLAY: "
-echo -n "$MOON_PERCENT%, "
-if [[ $MOON_PERCENT -lt 7 ]] ; then
-  echo "new"
-elif [[ $MOON_PERCENT -lt 19 ]] ; then
-  echo "waxing crescent"
-elif [[ $MOON_PERCENT -lt 32 ]] ; then
-  echo "first quarter"
-elif [[ $MOON_PERCENT -lt 44 ]] ; then
-  echo "waxing gibbous"
-elif [[ $MOON_PERCENT -lt 57 ]] ; then
-  echo "full"
-elif [[ $MOON_PERCENT -lt 69  ]] ; then
-  echo "waning gibbous"
-elif [[ $MOON_PERCENT -lt 82 ]] ; then
-  echo "third quarter"
-elif [[ $MOON_PERCENT -lt 94 ]] ; then
-  echo "waning crescent"
+if ((display_symbols)); then
+
+  if [[ $MOON_PERCENT -lt 7 ]] ; then
+    echo 🌑
+  elif [[ $MOON_PERCENT -lt 19 ]] ; then
+    echo 🌒
+  elif [[ $MOON_PERCENT -lt 32 ]] ; then
+    echo 🌓
+  elif [[ $MOON_PERCENT -lt 44 ]] ; then
+    echo 🌔
+  elif [[ $MOON_PERCENT -lt 57 ]] ; then
+    echo 🌕
+  elif [[ $MOON_PERCENT -lt 69 ]] ; then
+    echo 🌖
+  elif [[ $MOON_PERCENT -lt 82 ]] ; then
+    echo 🌗
+  elif [[ $MOON_PERCENT -lt 94 ]] ; then
+    echo 🌘
+  else
+    echo 🌑
+  fi
+
 else
-  echo "new"
+
+  # Display the calulated moon phase. There are eight named phases, so
+  #   each occupies 12.5% of the total synodic month. Full moon, for example,
+  #   is exactly 50%; but we'll take values 44%-57% as full. Strictly it
+  #   should be 43.75 to 56.25, but the error created in working with
+  #   whole-number percentages is not significant here. 
+  echo -n "$NOW_DISPLAY: "
+  echo -n "$MOON_PERCENT%, "
+  if [[ $MOON_PERCENT -lt 7 ]] ; then
+    echo "new"
+  elif [[ $MOON_PERCENT -lt 19 ]] ; then
+    echo "waxing crescent"
+  elif [[ $MOON_PERCENT -lt 32 ]] ; then
+    echo "first quarter"
+  elif [[ $MOON_PERCENT -lt 44 ]] ; then
+    echo "waxing gibbous"
+  elif [[ $MOON_PERCENT -lt 57 ]] ; then
+    echo "full"
+  elif [[ $MOON_PERCENT -lt 69  ]] ; then
+    echo "waning gibbous"
+  elif [[ $MOON_PERCENT -lt 82 ]] ; then
+    echo "third quarter"
+  elif [[ $MOON_PERCENT -lt 94 ]] ; then
+    echo "waning crescent"
+  else
+    echo "new"
+  fi
+
 fi
-
-

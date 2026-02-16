@@ -37,18 +37,20 @@ REF_EPOCH=`date --date "$REF_DATE" +%s`
 
 usage () {
   cat <<USAGE
-$0 [-h|-s] [<date>]
+$0 [-h|-s|-f] [<date>]
   -h            show usage
   -s            display with symbols
+  -f            display with Nerd Font icons
   no option     display with text
   <date>        use given date instead of today, like "Jan 15 2023"
 USAGE
 }
 
-while getopts "hs" arg; do
+while getopts "hsf" arg; do
   case $arg in
     h) usage; exit 0 ;;
     s) display_symbols=1 ;;
+    f) display_nerd_font=1 ;;
     *) ;;
   esac
 done
@@ -104,6 +106,33 @@ if ((display_symbols)); then
     echo 🌘
   else
     echo 🌑
+  fi
+
+# Using the 8 phases above, and the Material Design (nf-md-) moon phase
+# icons from Nerd Font. The weather icons (nf-weather-) have a full
+# 28 different moon phase icons, but that didn't seem worth the trouble.
+# You will need to have a Nerd Font installed for this to work.
+# Find them at www.nerdfonts.com
+elif ((display_nerd_font)); then
+
+  if [[ $MOON_PERCENT -lt 7 ]] ; then
+    echo 󰽤
+  elif [[ $MOON_PERCENT -lt 19 ]] ; then
+    echo 󰽧
+  elif [[ $MOON_PERCENT -lt 32 ]] ; then
+    echo 󰽡
+  elif [[ $MOON_PERCENT -lt 44 ]] ; then
+    echo 󰽨
+  elif [[ $MOON_PERCENT -lt 57 ]] ; then
+    echo 󰽢
+  elif [[ $MOON_PERCENT -lt 69 ]] ; then
+    echo 󰽦
+  elif [[ $MOON_PERCENT -lt 82 ]] ; then
+    echo 󰽣
+  elif [[ $MOON_PERCENT -lt 94 ]] ; then
+    echo 󰽥
+  else
+    echo 󰽤
   fi
 
 else
